@@ -83,8 +83,15 @@ Char2End:
 .byte PRG, FileDataBlock
 .include "sm2main.asm"
 
+.byte FileHeaderBlock,$04,$04
+.byte "SM2MENU1"
+.word $6000, SM2MENU1END-SM2MENU1START
+.byte PRG, FileDataBlock
+.include "sm2menu.asm"
+
+
  .byte FileHeaderBlock
- .byte $04,$20
+ .byte $06,$20
  .byte "SM2DATA2"
  .word $c470
  .word Data2End-Data2Start
@@ -96,7 +103,7 @@ Data2Start:
 Data2End:
 
  .byte FileHeaderBlock
- .byte $05,$30
+ .byte $07,$30
  .byte "SM2DATA3"
  .word $c5d0
  .word Data3End-Data3Start
@@ -108,7 +115,7 @@ Data3Start:
 Data3End:
 
  .byte FileHeaderBlock
- .byte $06,$40
+ .byte $08,$40
  .byte "SM2DATA4"
  .word $c2b4
  .word Data4End-Data4Start
@@ -119,12 +126,8 @@ Data4Start:
  .incbin "sm2data4.o.bin"
 Data4End:
 
- .byte FileHeaderBlock
- .byte $07,$0f
- .byte "SM2SAVE "
- .word $d29f
- .word 1
- .byte PRG
-
- .byte FileDataBlock
- .byte 0
+.byte FileHeaderBlock,$09,$0f
+.byte "SM2SAVE "
+.word $6000, 1
+.byte PRG, FileDataBlock
+.byte 0

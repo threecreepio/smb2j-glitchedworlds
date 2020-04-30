@@ -793,6 +793,7 @@ ColdBoot:   jsr InitializeMemory        ;clear memory using pointer in Y
             sta DiskIOTask
             pla
             sta WorldNumber
+GL_ENTER:
             lda #$a5                    ;set warm boot flag in case the player hits reset
             sta WarmBootValidation     
             sta PseudoRandomBitReg      ;set seed for pseudorandom register
