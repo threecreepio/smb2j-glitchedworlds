@@ -26,7 +26,7 @@ VRAM = 2
  .byte $ff,$ff,$ff,$ff,$ff,$00,$00,$00,$00
 
  .byte FileAmountBlock
- .byte 8
+ .byte 9
 
  .byte FileHeaderBlock
  .byte $00,$00
@@ -84,6 +84,12 @@ Char2End:
 .include "sm2main.asm"
 
 .byte FileHeaderBlock,$04,$04
+.byte "SM2MAIN2"
+.word $c2b4, SM2MAIN2END-SM2MAIN2START
+.byte PRG, FileDataBlock
+.include "sm2main2.asm"
+
+.byte FileHeaderBlock,$05,$03
 .byte "SM2MENU1"
 .word $6000, SM2MENU1END-SM2MENU1START
 .byte PRG, FileDataBlock
