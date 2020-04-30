@@ -11,7 +11,7 @@ LD = ld65
 	$(AS) -g --debug-info $< -o $@.o
 	$(LD) $@.o -C layoutbin -o $@
 
-main.fds: layout sm2main.o.bin sm2data2.o.bin sm2data3.o.bin sm2data4.o.bin fdswrap.o
+main.fds: layout sm2data2.o.bin sm2data3.o.bin sm2data4.o.bin fdswrap.o
 	$(LD) --dbgfile $@.dbg -C layout fdswrap.o -o $@
 
 clean:

@@ -77,23 +77,11 @@ Char2Start:
  .incbin "SM2CHAR2.CHR"
 Char2End:
 
-
-
-
-
-
-
- .byte FileHeaderBlock
- .byte $03,$05
- .byte "SM2MAIN "
- .word $6000
- .word MainEnd-MainStart
- .byte PRG
-
- .byte FileDataBlock
-MainStart:
- .incbin "sm2main.o.bin"
-MainEnd:
+.byte FileHeaderBlock,$03,$05
+.byte "SM2MAIN "
+.word $6000, SM2MAINEND-SM2MAINSTART
+.byte PRG, FileDataBlock
+.include "sm2main.asm"
 
  .byte FileHeaderBlock
  .byte $04,$20

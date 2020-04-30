@@ -765,7 +765,8 @@ GameOverMode          = 3
 ;-------------------------------------------------------------------------------------
 ;DIRECTIVES
 
-       .org $6000
+.org $6000
+SM2MAINSTART:
 
 ;-------------------------------------------------------------------------------------
 
@@ -16595,3 +16596,4 @@ BrickShatterEnvData:
         .word NMIHandler
         .word Start
         .word IRQHandler
+SM2MAINEND:
