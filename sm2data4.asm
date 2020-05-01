@@ -213,7 +213,7 @@ CHalfL: lda AtoDHalfwayPages,y     ;load new halfway nybbles over the old ones
 ;$06 - used to store vertical length of pipe
 ;$07 - starts with adder from area parser, used to store row offset
 
- .res $c470 - *, $00
+ .res $c470 - *, $FF
 
 UpsideDownPipe_High:
        lda #$01                     ;start at second row
