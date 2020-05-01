@@ -151,10 +151,11 @@ Title_Setup:
 
 
 
-
+ReadOrDownVerifyPads = $ea4c
 Title_Main:
-    jsr TReadJoypads
-    lda SavedJoypad2Bits
+    jsr ReadOrDownVerifyPads
+    ldx $f7
+    lda $f5
     clc
     ldy WSelection
 
@@ -336,33 +337,6 @@ print_hexbyte:
     and #$0F
     jsr print_hexchar
     rts
-
-TReadJoypads:
-    lda #0
-    sta SavedJoypad2Bits
-    lda #$01
-    sta JOYPAD_PORT
-    lsr
-    sta JOYPAD_PORT
-    ldy #$08
-TPortLoop:
-    pha
-    lda JOYPAD_PORT
-    sta $00
-    lsr
-    ora $00
-    lsr
-    pla
-    rol
-    dey
-    bne TPortLoop
-    cmp SavedJoypadBits
-    beq TPortLoop2
-    sta SavedJoypad2Bits
-TPortLoop2:
-    sta SavedJoypadBits
-    rts
-
 
 TStartGame:
     lda #%00000000
