@@ -367,7 +367,7 @@ TPortLoop2:
 TStartGame:
     lda #%00000000
     sta PPU_CTRL
-    lda #%00001110
+    lda #%00000000
     sta PPU_MASK
     jsr WriteSettingsFile
 
