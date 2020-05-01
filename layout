@@ -1,6 +1,6 @@
 MEMORY
 {
-	CODE:  start =    $0, size = $80000, fill=no, fillval=$FF;
+	CODE:  start =    $0, size = $FFEC, fill=yes, fillval=$00;
 }
 
 SEGMENTS
