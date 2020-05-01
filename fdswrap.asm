@@ -141,4 +141,4 @@ Data4End:
 .byte "SM2MENU2"
 .word SettingsFileStart, SettingsFileEnd-SettingsFileStart
 .byte PRG, FileDataBlock
-.byte 0, 0, 0, 0, 0, 2
+.byte 0, 0, 0, 0, 0, 1
