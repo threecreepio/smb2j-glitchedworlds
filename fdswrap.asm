@@ -26,7 +26,7 @@ VRAM = 2
  .byte $ff,$ff,$ff,$ff,$ff,$00,$00,$00,$00
 
  .byte FileAmountBlock
- .byte 9
+ .byte 11
 
  .byte FileHeaderBlock
  .byte $00,$00
@@ -89,15 +89,8 @@ Char2End:
 .byte PRG, FileDataBlock
 .include "sm2main2.asm"
 
-.byte FileHeaderBlock,$05,$03
-.byte "SM2MENU1"
-.word $6000, SM2MENU1END-SM2MENU1START
-.byte PRG, FileDataBlock
-.include "sm2menu.asm"
-
-
  .byte FileHeaderBlock
- .byte $06,$20
+ .byte $05,$20
  .byte "SM2DATA2"
  .word $c470
  .word Data2End-Data2Start
@@ -109,7 +102,7 @@ Data2Start:
 Data2End:
 
  .byte FileHeaderBlock
- .byte $07,$30
+ .byte $06,$30
  .byte "SM2DATA3"
  .word $c5d0
  .word Data3End-Data3Start
@@ -119,6 +112,12 @@ Data2End:
 Data3Start:
  .incbin "sm2data3.o.bin"
 Data3End:
+
+.byte FileHeaderBlock,$07,$0f ; DO NOT MOVE THIS FILE, HAS TO BE SLOT 7!
+.byte "SM2SAVE "
+.word $d29f, 1
+.byte PRG, FileDataBlock
+.byte 0
 
  .byte FileHeaderBlock
  .byte $08,$40
@@ -132,8 +131,14 @@ Data4Start:
  .incbin "sm2data4.o.bin"
 Data4End:
 
-.byte FileHeaderBlock,$09,$0f
-.byte "SM2SAVE "
-.word $6000, 1
+.byte FileHeaderBlock,$09,$0e
+.byte "SM2MENU1"
+.word $6000, SM2MENU1END-SM2MENU1START
 .byte PRG, FileDataBlock
-.byte 0
+.include "sm2menu.asm"
+
+.byte FileHeaderBlock,$0A,$0d ; DO NOT MOVE THIS FILE, HAS TO BE SLOT A!
+.byte "SM2MENU2"
+.word SettingsFileStart, SettingsFileEnd-SettingsFileStart
+.byte PRG, FileDataBlock
+.byte 0, 0, 0, 0, 0, 2
