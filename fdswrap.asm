@@ -13,9 +13,6 @@ VRAM = 2
 
  .org $0
 
-;FWNES header
- .byte "FDS",$1a,1,0,0,0,0,0,0,0,0,0,0,0
-
  .byte DiskInfoBlock
  .byte "*NINTENDO-HVC*"
  .byte $01,"SMB ",0,0,0,0,0,$0f
