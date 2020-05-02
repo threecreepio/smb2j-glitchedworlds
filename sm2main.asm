@@ -14193,7 +14193,7 @@ GameModeDiskRoutines:
 LoadWorlds5Thru8:
       lda WorldNumber       ;if in worlds 1-4 or A-D
       cmp #World5           ;then leave without loading anything
-      bcc ResetDiskIOTask
+      bvc ResetDiskIOTask
       lda FileListNumber    ;if worlds 5-8 were already loaded, leave
       bne ResetDiskIOTask   ;as there's no need to load anything
       lda #$01
