@@ -393,14 +393,17 @@ TStartGame:
     lda WFile
     sta FileListNumber
 
-    ldx #0
     lda #>(GL_ENTER - 1)
     pha
     lda #<(GL_ENTER - 1)
     pha
-    lda #>(PlayerLoseLife - 1)
+    lda #>(ContinueGame2 - 1)
     pha
-    lda #<(PlayerLoseLife - 1)
+    lda #<(ContinueGame2 - 1)
+    pha
+    lda #>(LoadAreaPointer - 1)
+    pha
+    lda #<(LoadAreaPointer - 1)
     pha
     jmp TitleLoadFiles
     : jmp :-
@@ -440,13 +443,13 @@ TitleFileListAddrs:
 
 TitleWorldLists:
 TitleWorld14List:
-      .byte $01, $04, $05, $ff
+      .byte $01, $04, $0e, $ff
 TitleWorld58List:
-      .byte $01, $04, $05, $20, $ff
+      .byte $01, $04, $0e, $20, $ff
 TitleEndingList:
-      .byte $10, $04, $05, $20, $30, $ff
+      .byte $10, $04, $0e, $20, $30, $ff
 TitleWorldADList:
-      .byte $01, $04, $05, $40, $ff
+      .byte $01, $04, $0e, $40, $ff
 
 TitleLoadFiles:
     ldy FileListNumber

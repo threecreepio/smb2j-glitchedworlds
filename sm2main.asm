@@ -787,7 +787,7 @@ WBootCheck: lda TopScoreDisplay,x       ;first checkpoint, check each score digi
             cmp #$a5                    ;another location has a specific value
             bne ColdBoot   
             ldy #WarmBootOffset         ;if passed both, load warm boot pointer
-ColdBoot:   jsr $C103        ;clear memory using pointer in Y  
+ColdBoot:   jsr LoadFilesDirect        ;clear memory using pointer in Y  
             sta SND_DELTA_REG+1
             sta OperMode                ;now manually reset some other stuff
             sta DiskIOTask
@@ -2841,11 +2841,12 @@ ExRGO: rts
 ContinueGame:
            jsr LoadAreaPointer       ;update level pointer with
            lda #$01                  ;actual world and area numbers, then
-           sta PlayerSize+4            ;reset player's size, status, and
+           sta PlayerSize            ;reset player's size, status, and
            inc FetchNewGameTimerFlag ;set game timer flag to reload
            lda #$00                  ;game timer from header
            sta TimerControl          ;also set flag for timers to count again
-           sta PlayerStatus+2
+           sta PlayerStatus
+ContinueGame2:
            sta GameEngineSubroutine  ;reset task for game core
            sta OperMode_Task         ;set modes and leave
            lda #$01                  ;if in game over mode, switch back to
@@ -14193,7 +14194,7 @@ GameModeDiskRoutines:
 LoadWorlds5Thru8:
       lda WorldNumber       ;if in worlds 1-4 or A-D
       cmp #World5           ;then leave without loading anything
-      bvc ResetDiskIOTask
+      bcc ResetDiskIOTask
       lda FileListNumber    ;if worlds 5-8 were already loaded, leave
       bne ResetDiskIOTask   ;as there's no need to load anything
       lda #$01
@@ -14275,7 +14276,7 @@ World14List:
 World58List:
       .byte $20, $ff
 EndingList:
-      .byte $10, $0e, $0f, $ff
+      .byte $10, $30, $0f, $ff
 WorldADList:
       .byte $40, $ff
 
@@ -14293,7 +14294,7 @@ LoadFilesDirect:
 
 ;used by FDS BIOS routine
              .word DiskIDString
-ListPointer: .word EndingList  ;overwritten in RAM
+ListPointer: .word World14List  ;overwritten in RAM
 
 ;execution continues here
       rts

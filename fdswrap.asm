@@ -79,7 +79,7 @@ Char2Start:
  .incbin "SM2CHAR2.CHR"
 Char2End:
 
-.byte FileHeaderBlock,$03,$05
+.byte FileHeaderBlock,$03,$0e
 .byte "SM2MAIN "
 .word $6000, SM2MAINEND-SM2MAINSTART
 .byte PRG, FileDataBlock
@@ -133,7 +133,7 @@ Data4Start:
  .incbin "sm2data4.o.bin"
 Data4End:
 
-.byte FileHeaderBlock,$09,$0e
+.byte FileHeaderBlock,$09,$05
 .byte "SM2MENU1"
 .word $6000, SM2MENU1END-SM2MENU1START
 .byte PRG, FileDataBlock
