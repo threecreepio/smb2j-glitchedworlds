@@ -392,6 +392,7 @@ TStartGame:
 
     lda WFile
     sta FileListNumber
+    inc FetchNewGameTimerFlag
 
     lda #>(GL_ENTER - 1)
     pha
@@ -443,13 +444,13 @@ TitleFileListAddrs:
 
 TitleWorldLists:
 TitleWorld14List:
-      .byte $01, $04, $0e, $ff
+      .byte $01, $0e, $ff
 TitleWorld58List:
-      .byte $01, $04, $0e, $20, $ff
+      .byte $01, $0e, $20, $ff
 TitleEndingList:
-      .byte $10, $04, $0e, $20, $30, $ff
+      .byte $10, $0e, $20, $30, $ff
 TitleWorldADList:
-      .byte $01, $04, $0e, $40, $ff
+      .byte $01, $0e, $20, $40, $ff
 
 TitleLoadFiles:
     ldy FileListNumber
