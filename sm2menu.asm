@@ -392,7 +392,9 @@ TStartGame:
 
     lda WFile
     sta FileListNumber
-    inc FetchNewGameTimerFlag
+
+    lda #4
+    sta GameTimerDisplay
 
     lda #>(GL_ENTER - 1)
     pha
