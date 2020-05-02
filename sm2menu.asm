@@ -65,7 +65,7 @@ Title_Setup:
     lda PALETTE,x
     sta PPU_DATA
     inx
-    cpx #4
+    cpx #(PALETTEEND-PALETTE)
     bne @WRITE_PAL
 
     ldx #0
