@@ -158,6 +158,9 @@ Title_Main:
     lda $f5
     clc
     ldy WSelection
+    cmp #0
+    bne @RIGHT
+    : jmp :-
 
 @RIGHT:
     cmp #%00000001
