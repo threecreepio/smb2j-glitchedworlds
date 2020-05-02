@@ -5,7 +5,12 @@ This patch adds a world select menu when starting SMB2J.
 
 Make sure to only choose files 0, 1, 2 or 3, any other files will likely just crash the game.. But that's half the fun.
 
-You can control the menu by pressing select to toggle between items, pressing left and right to increment values by 1, up and down to increment by 16.
+Usage:
+ - Press select to switch between lines
+ - Press Left or Right to change values by 1, Up or Down to change by 16
+ - Press B to save your selections to disk
+ - Press Start to start the game!
+ - Press Start+A to start the game with the hard mode flag set (doesn't do much except change how the level name is displayed on the title screen.)
 
 The 'file' behavior is a little weird, so if you want to match the original game:
  - If you want to play 1-1, select File 0 and pick World 0
