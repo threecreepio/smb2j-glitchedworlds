@@ -378,17 +378,10 @@ TStartGame:
 
     lda #1
     sta OperMode
-    lda #2
+    lda #0
     sta OperMode_Task
     lda #0
     sta GameEngineSubroutine
-    lda #0
-    sta DiskIOTask
-
-    lda #<NMIHandler
-    sta $DFFA
-    lda #>NMIHandler
-    sta $DFFB
 
     lda WFile
     sta FileListNumber
@@ -396,13 +389,12 @@ TStartGame:
     lda #4
     sta GameTimerDisplay
 
+    lda #$00                  ;game timer from header
+    sta TimerControl          ;also set flag for timers to count again
+
     lda #>(GL_ENTER - 1)
     pha
     lda #<(GL_ENTER - 1)
-    pha
-    lda #>(ContinueGame2 - 1)
-    pha
-    lda #<(ContinueGame2 - 1)
     pha
     lda #>(LoadAreaPointer - 1)
     pha
@@ -410,7 +402,6 @@ TStartGame:
     pha
     jmp TitleLoadFiles
     : jmp :-
-
 
 ; Save settings file to disk
 SaveFileHeader:
@@ -500,7 +491,6 @@ CopyFromBackup:
     bne @KeepCopying
 @Exit:
     rts
-
 
 .include "sm2menubg.asm"
 .res $6F00 - *, $00

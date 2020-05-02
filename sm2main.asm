@@ -2846,7 +2846,6 @@ ContinueGame:
            lda #$00                  ;game timer from header
            sta TimerControl          ;also set flag for timers to count again
            sta PlayerStatus
-ContinueGame2:
            sta GameEngineSubroutine  ;reset task for game core
            sta OperMode_Task         ;set modes and leave
            lda #$01                  ;if in game over mode, switch back to
