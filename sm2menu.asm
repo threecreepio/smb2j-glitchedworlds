@@ -11,6 +11,7 @@ SM2MENU1START:
 .byte $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA
 .byte $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA
 TitleReset:
+    jsr CopyFromBackup
     lda #<TitleNMI
     sta $DFFA
     lda #>TitleNMI
@@ -149,8 +150,6 @@ Title_Setup:
     : jmp :-
 
 
-
-
 ReadOrDownVerifyPads = $ea4c
 Title_Main:
     jsr ReadOrDownVerifyPads
@@ -188,10 +187,16 @@ Title_Main:
 
 @UP:
     cmp #%00001000
-    bne @SELECT
+    bne @B
     lda #$F
     adc WSelections,y
     sta WSelections,y
+    jmp Rerender
+
+@B:
+    cmp #%01000000
+    bne @SELECT
+    jsr WriteSettingsFile
     jmp Rerender
 
 @SELECT:
@@ -352,7 +357,7 @@ TStartGame:
     sta PPU_CTRL
     lda #%00000000
     sta PPU_MASK
-    jsr WriteSettingsFile
+    jsr CopyToBackup
 
     lda Mirror_FDS_CTRL_REG     ;get setting previously used by FDS bios
     and #$f7                    ;and set for vertical mirroring
@@ -458,6 +463,37 @@ TitleKeepCopying:
     cmp $ff
     bcc TitleKeepCopying
     jmp LoadFilesDirect
+
+
+
+
+
+WBackupLocation = $761
+
+CopyToBackup:
+    ldx #$69
+    stx WBackupLocation
+    ldx #(SettingsFileEnd-SettingsFileStart-1)
+@KeepCopying:
+    lda SettingsFileStart,x
+    sta WBackupLocation+1,x
+    dex
+    bne @KeepCopying
+@Exit:
+    rts
+
+CopyFromBackup:
+    ldx WBackupLocation
+    cpx #$69
+    bne @Exit
+    ldx #(SettingsFileEnd-SettingsFileStart-1)
+@KeepCopying:
+    lda WBackupLocation+1,x
+    sta SettingsFileStart,x
+    dex
+    bne @KeepCopying
+@Exit:
+    rts
 
 
 .include "sm2menubg.asm"
