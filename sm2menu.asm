@@ -407,35 +407,29 @@ TStartGame:
     jmp LoadFiles
     : jmp :-
 
-SettingsFileStart:
-WSelection:
-.byte $00
-WSelections:
-WFile:
-.byte $00
-WWorldNumber:
-.byte $00
-WAreaNumber:
-.byte $00
-WPlayerStatus:
-.byte $00
-WPlayerSize:
-.byte $00
-SettingsFileEnd:
 
+; Save settings file to disk
 SaveFileHeader:
-    .byte $0e, "SM2MENU2"
+    .byte $0d, "SM2MENU2"
     .word SettingsFileStart
     .byte SettingsFileEnd-SettingsFileStart, $00, $00
     .word SettingsFileStart
     .byte $00
 
 WriteSettingsFile:
+    lda #%00010000
+    sta PPU_CTRL
+    lda #%11101110
+    sta PPU_MASK
     lda #$0A               ;set file sequential position
     jsr FDSBIOS_WRITEFILE  ;save number of games beaten to SM2SAVE
     .word DiskIDString
     .word SaveFileHeader
-    rts
+    lda #%00001110
+    sta PPU_MASK
+    lda #%10010000
+    sta PPU_CTRL
+    : jmp :-
 
 TitleDiskIDString:
       .byte $01, $53, $4d, $42, $20
@@ -471,5 +465,21 @@ TitleListPointer: .word TitleWorld14List  ;overwritten in RAM
         rts
 
 .include "sm2menubg.asm"
-.res $7000 - *, $ff
+.res $6F00 - *, $00
+SettingsFileStart:
+WSelection:
+.byte $00
+WSelections:
+WFile:
+.byte $00
+WWorldNumber:
+.byte $00
+WAreaNumber:
+.byte $00
+WPlayerStatus:
+.byte $00
+WPlayerSize:
+.byte $01
+SettingsFileEnd:
+.res $7000 - *, $00
 SM2MENU1END:
