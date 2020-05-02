@@ -2,7 +2,7 @@
 JumpEngineCore = $EAFD
 
 SM2MENU1START:
-    jsr Initialize
+    jsr CopySettingsToMemory
 ; pad this to make it easier for the game to throw us back here
 ; without making too many changes to the original files.
 .byte $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA
@@ -26,7 +26,10 @@ wait_vbl0:
 wait_vbl1:
     lda PPU_STATUS
     bpl wait_vbl1
+    jsr CopyMemoryToSettings
+    ldy #$FF
     jsr MInitializeMemory
+    jsr CopySettingsToMemory
     ldx #0
     stx OperMode_Task
     cli
@@ -288,6 +291,12 @@ TStartGame:
     lda #%00000000
     sta PPU_MASK
 
+    lda #$00
+    sta IRQUpdateFlag
+    lda #Silence             ;silence music
+    sta EventMusicQueue
+    sta $4015
+
     lda Mirror_FDS_CTRL_REG     ;get setting previously used by FDS bios
     and #$f7                    ;and set for vertical mirroring
     sta FDS_CTRL_REG
@@ -327,20 +336,33 @@ TStartGame:
 
 
 
-Initialize:
+CopySettingsToMemory:
     ldy #0
     ldx #(SettablesLowEnd-SettablesLow)
 @CopySetting:
-    lda SettablesLow,x
+    lda SettablesLow-1,x
     sta $0
-    lda SettablesHi,x
+    lda SettablesHi-1,x
     sta $1
-    lda SettingsFileStart+1,x
+    lda SettingsFileStart,x
     sta ($0),y
     dex
     bne @CopySetting
     rts
 
+CopyMemoryToSettings:
+    ldy #0
+    ldx #(SettablesLowEnd-SettablesLow)
+@CopySetting:
+    lda SettablesLow-1,x
+    sta $0
+    lda SettablesHi-1,x
+    sta $1
+    lda ($0),y
+    sta SettingsFileStart,x
+    dex
+    bne @CopySetting
+    rts
 
 
 ; Save settings file to disk
