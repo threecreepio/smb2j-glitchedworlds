@@ -34,49 +34,6 @@ wait_vbl1:
     sta PPU_CTRL
 :   jmp :-
 
-
-
-
-MenuIRQHandler:
-      sei
-      php                      ;save regs
-      pha
-      txa
-      pha
-      tya
-      pha
-      lda FDS_STATUS           ;get disk status register, acknowledge IRQs
-      pha
-      and #$02                 ;if byte transfer flag set, branch elsewhere
-      bne MenuDelayNoScr
-      pla
-      and #$01                 ;if IRQ timer flag not set, branch to leave
-      beq MenuExitIRQ
-      lda Mirror_PPU_CTRL
-      and #$f7                 ;mask out sprite address high reg of ctrl reg mirror
-      ora NameTableSelect      ;mask in whatever's set here
-      sta Mirror_PPU_CTRL      ;update the register and its mirror
-      sta PPU_CTRL
-      lda #$00
-      sta FDS_IRQTIMER_CTRL    ;disable IRQ timer for the rest of the frame
-      lda HorizontalScroll
-      sta PPU_SCROLL           ;set scroll regs for the screen under the status bar
-      lda VerticalScroll       ;to achieve the split screen effect
-      sta PPU_SCROLL
-      lda #$00
-      sta IRQAckFlag           ;indicate IRQ was acknowledged
-      jmp MenuExitIRQ              ;skip over the next part to end IRQ
-MenuDelayNoScr: pla                      ;throw away disk status reg byte
-      jsr FDSBIOS_DELAY        ;run delay subroutine in FDS bios
-MenuExitIRQ:    pla
-      tay                      ;return regs, reenable IRQs and leave
-      pla
-      tax
-      pla
-      plp
-      cli
-      rti
-
 TitleNMI:
       ldx #$FF
       txs
