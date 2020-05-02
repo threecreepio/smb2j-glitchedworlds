@@ -473,10 +473,10 @@ WBackupLocation = $761
 CopyToBackup:
     ldx #$69
     stx WBackupLocation
-    ldx #(SettingsFileEnd-SettingsFileStart-1)
+    ldx #(SettingsFileEnd-SettingsFileStart)
 @KeepCopying:
-    lda SettingsFileStart,x
-    sta WBackupLocation+1,x
+    lda SettingsFileStart-1,x
+    sta WBackupLocation,x
     dex
     bne @KeepCopying
 @Exit:
@@ -486,10 +486,10 @@ CopyFromBackup:
     ldx WBackupLocation
     cpx #$69
     bne @Exit
-    ldx #(SettingsFileEnd-SettingsFileStart-1)
+    ldx #(SettingsFileEnd-SettingsFileStart)
 @KeepCopying:
-    lda WBackupLocation+1,x
-    sta SettingsFileStart,x
+    lda WBackupLocation,x
+    sta SettingsFileStart-1,x
     dex
     bne @KeepCopying
 @Exit:
