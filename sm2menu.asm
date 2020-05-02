@@ -209,6 +209,12 @@ Title_Main:
 @START:
     cmp #%00010000
     bne @DONE
+    cpx #%10000000
+    lda #0
+    bcc @START2
+    lda #1
+@START2:
+    sta HardWorldFlag
     jmp TStartGame
 @DONE:
     : jmp :-
