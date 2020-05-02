@@ -4403,7 +4403,7 @@ PlayerEntrance:
             beq EntrMode2             ;if found, branch to enter from pipe or with vine
             lda #$00       
             ldy Player_Y_Position     ;if vertical position above a certain
-            cpy #$30                  ;point, nullify controller bits and continue
+            cpy #$00                  ;point, nullify controller bits and continue
             bcc AutoControlPlayer     ;with player movement code, do not return
             lda PlayerEntranceCtrl    ;check player entry bits from header
             cmp #$06
