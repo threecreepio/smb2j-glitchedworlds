@@ -14275,7 +14275,7 @@ World14List:
 World58List:
       .byte $20, $ff
 EndingList:
-      .byte $10, $0e, $0d, $ff
+      .byte $10, $0e, $0f, $ff
 WorldADList:
       .byte $40, $ff
 
@@ -14288,6 +14288,7 @@ LoadFiles:
       sta ListPointer
       lda FileListAddrHigh,x
       sta ListPointer+1
+LoadFilesDirect:
       jsr FDSBIOS_LOADFILES   ;now load the files
 
 ;used by FDS BIOS routine

@@ -380,7 +380,6 @@ TStartGame:
     lda #0
     sta DiskIOTask
 
-
     lda #<NMIHandler
     sta $DFFA
     lda #>NMIHandler
@@ -388,23 +387,17 @@ TStartGame:
 
     lda WFile
     sta FileListNumber
-    jsr TitleLoadFiles
-    lda #1
-    sta GameTimerSetting
-    jsr Entrance_GameTimerSetup
 
     ldx #0
     lda #>(GL_ENTER - 1)
     pha
     lda #<(GL_ENTER - 1)
     pha
-    lda #>(LoadAreaPointer - 1)
+    lda #>(PlayerLoseLife - 1)
     pha
-    lda #<(LoadAreaPointer - 1)
+    lda #<(PlayerLoseLife - 1)
     pha
-    lda #0
-    sta FileListNumber
-    jmp LoadFiles
+    jmp TitleLoadFiles
     : jmp :-
 
 
@@ -431,38 +424,41 @@ WriteSettingsFile:
     sta PPU_CTRL
     : jmp :-
 
-TitleDiskIDString:
-      .byte $01, $53, $4d, $42, $20
-      .byte $00, $00, $00, $00, $00
 
-TitleFileListAddrLow:
-      .byte <TitleWorld14List, <TitleWorld58List, <TitleEndingList, <TitleWorldADList
-TitleFileListAddrHigh:
-      .byte >TitleWorld14List, >TitleWorld58List, >TitleEndingList, >TitleWorldADList
 
-;file lists used by FDS bios to load files
-;value $ff is end terminator
+; Load game data
+TitleFileListAddrs:
+      .byte TitleWorld14List-TitleWorldLists
+      .byte TitleWorld58List-TitleWorldLists
+      .byte TitleEndingList-TitleWorldLists
+      .byte TitleWorldADList-TitleWorldLists
+
+TitleWorldLists:
 TitleWorld14List:
-      .byte $01, $04, $ff
+      .byte $01, $04, $05, $ff
 TitleWorld58List:
-      .byte $01, $04, $20, $ff
+      .byte $01, $04, $05, $20, $ff
 TitleEndingList:
-      .byte $10, $04, $20, $30, $ff
+      .byte $10, $04, $05, $20, $30, $ff
 TitleWorldADList:
-      .byte $01, $04, $40, $ff
+      .byte $01, $04, $05, $40, $ff
 
 TitleLoadFiles:
-      ldx FileListNumber      ;get address to file list
-      lda TitleFileListAddrLow,x
-      sta TitleListPointer
-      lda TitleFileListAddrHigh,x
-      sta TitleListPointer+1
-      jsr FDSBIOS_LOADFILES   ;now load the files
+    ldy FileListNumber
+    ldx TitleFileListAddrs,y
+    ldy #$03
+    sty ListPointer+1
+    ldy #$00
+    sty ListPointer
+TitleKeepCopying:
+    lda TitleWorldLists,x
+    sta $0300,y
+    inx
+    iny
+    cmp $ff
+    bcc TitleKeepCopying
+    jmp LoadFilesDirect
 
-;used by FDS BIOS routine
-.word TitleDiskIDString
-TitleListPointer: .word TitleWorld14List  ;overwritten in RAM
-        rts
 
 .include "sm2menubg.asm"
 .res $6F00 - *, $00
