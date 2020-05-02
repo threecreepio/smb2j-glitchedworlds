@@ -2,6 +2,7 @@
 JumpEngineCore = $EAFD
 
 SM2MENU1START:
+    jsr Initialize
 ; pad this to make it easier for the game to throw us back here
 ; without making too many changes to the original files.
 .byte $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA
@@ -11,7 +12,6 @@ SM2MENU1START:
 .byte $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA
 .byte $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA, $EA
 TitleReset:
-    jsr CopyFromBackup
     lda #<TitleNMI
     sta $DFFA
     lda #>TitleNMI
@@ -110,44 +110,51 @@ Title_Setup:
 ReadOrDownVerifyPads = $ea4c
 Title_Main:
     jsr ReadOrDownVerifyPads
-    ldx $f7
     lda $f5
     clc
-    ldy WSelection
     cmp #0
-    bne @RIGHT
+    bne @READINPUT
     : jmp :-
+
+@READINPUT:
+    ldy WSelection
+    ldx SettablesLow,y
+    stx $3
+    ldx SettablesHi,y
+    stx $4
+    ldy #0
 
 @RIGHT:
     cmp #%00000001
     bne @LEFT
-    lda #0
-    adc WSelections,y
-    sta WSelections,y
+
+    lda #$0
+    adc ($3),y
+    sta ($3),y
     jmp Rerender
 
 @LEFT:
     cmp #%00000010
     bne @DOWN
     lda #$FE
-    adc WSelections,y
-    sta WSelections,y
+    adc ($3),y
+    sta ($3),y
     jmp Rerender
 
 @DOWN:
     cmp #%00000100
     bne @UP
     lda #$EF
-    adc WSelections,y
-    sta WSelections,y
+    adc ($3),y
+    sta ($3),y
     jmp Rerender
 
 @UP:
     cmp #%00001000
     bne @B
     lda #$F
-    adc WSelections,y
-    sta WSelections,y
+    adc ($3),y
+    sta ($3),y
     jmp Rerender
 
 @B:
@@ -171,6 +178,7 @@ Title_Main:
 @START:
     cmp #%00010000
     bne @DONE
+    ldx $f7
     cpx #%10000000
     lda #0
     bcc @START2
@@ -189,88 +197,53 @@ Rerender:
     : jmp :-
 
 RenderMenu:
-    ldx WSelection
     lda #$20
-    sta PPU_ADDRESS
-    lda #$92
-    sta PPU_ADDRESS
-    lda WFile
-    jsr print_hexbyte
-    lda #$24
-    sta PPU_DATA
-    lda #$24
-    cpx #0
-    bne R0
-    adc #3
-    R0:
-    sta PPU_DATA
-    
-    ldx WSelection
-    lda #$20
-    sta PPU_ADDRESS
-    lda #$D2
-    sta PPU_ADDRESS
-    lda WWorldNumber
-    jsr print_hexbyte
-    lda #$24
-    sta PPU_DATA
-    lda #$24
-    cpx #1
-    bne R1
-    adc #3
-    R1:
-    sta PPU_DATA
-
-    lda #$21
-    sta PPU_ADDRESS
-    lda #$12
-    sta PPU_ADDRESS
-    lda WAreaNumber
-    jsr print_hexbyte
-    lda #$24
-    sta PPU_DATA
-    lda #$24
-    cpx #2
-    bne R2
-    adc #3
-    R2:
-    sta PPU_DATA
-    
-    lda #$21
-    sta PPU_ADDRESS
+    sta $1
     lda #$52
+    sta $2
+
+    lda #0
+    sta $0
+@RenderMenu:
+    ldy $0
+
+    clc
+    lda $2
+    adc #$40
+    sta $2
+    bcc @NoOverflow
+    inc $1
+@NoOverflow:
+    lda $1
     sta PPU_ADDRESS
-    lda WPlayerStatus
+    lda $2
+    sta PPU_ADDRESS
+
+    ldy $0
+    ldx SettablesLow,y
+    stx $3
+    ldx SettablesHi,y
+    stx $4
+    ldy #0
+
+    lda ($3),y
+    clc
     jsr print_hexbyte
+
     lda #$24
-    sta PPU_DATA
-    lda #$24
-    cpx #3
-    bne R3
-    adc #3
-    R3:
     sta PPU_DATA
 
-    lda #$21
-    sta PPU_ADDRESS
-    lda #$92
-    sta PPU_ADDRESS
-    lda WPlayerSize
-    jsr print_hexbyte
-    lda #$24
-    sta PPU_DATA
-    lda #$24
-    cpx #4
-    bne R4
+    ldy $0
+    cpy WSelection
+    bne @RenderSelectionTick
     adc #3
-    R4:
+@RenderSelectionTick:
     sta PPU_DATA
+    inc $0
+    lda $0
+    cmp #(SettablesLowEnd-SettablesLow)
+    bne @RenderMenu
     rts
-
-
-
-
-
 
 MInitializeMemory:
     ldx #$07          ;set initial high byte to $0700-$07ff
@@ -314,24 +287,16 @@ TStartGame:
     sta PPU_CTRL
     lda #%00000000
     sta PPU_MASK
-    jsr CopyToBackup
 
     lda Mirror_FDS_CTRL_REG     ;get setting previously used by FDS bios
     and #$f7                    ;and set for vertical mirroring
     sta FDS_CTRL_REG
 
+    lda AreaNumber
+    sta LevelNumber
+
     lda #$7F
     sta NumberofLives
-
-    lda WPlayerSize
-    sta PlayerSize
-    lda WPlayerStatus
-    sta PlayerStatus
-    lda WWorldNumber
-    sta WorldNumber
-    lda WAreaNumber
-    sta AreaNumber
-    sta LevelNumber
 
     lda #1
     sta OperMode
@@ -339,9 +304,6 @@ TStartGame:
     sta OperMode_Task
     lda #0
     sta GameEngineSubroutine
-
-    lda WFile
-    sta FileListNumber
 
     lda #4
     sta GameTimerDisplay
@@ -360,6 +322,27 @@ TStartGame:
     jmp TitleLoadFiles
     : jmp :-
 
+
+
+
+
+
+Initialize:
+    ldy #0
+    ldx #(SettablesLowEnd-SettablesLow)
+@CopySetting:
+    lda SettablesLow,x
+    sta $0
+    lda SettablesHi,x
+    sta $1
+    lda SettingsFileStart+1,x
+    sta ($0),y
+    dex
+    bne @CopySetting
+    rts
+
+
+
 ; Save settings file to disk
 SaveFileHeader:
     .byte $0d, "SM2MENU2"
@@ -373,6 +356,19 @@ WriteSettingsFile:
     sta PPU_CTRL
     lda #%11101110
     sta PPU_MASK
+    
+    ldy #0
+    ldx #(SettablesLowEnd-SettablesLow)
+@CopySetting:
+    lda SettablesLow,x
+    sta $0
+    lda SettablesHi,x
+    sta $1
+    lda ($0),y
+    sta SettingsFileStart+1,x
+    dex
+    bne @CopySetting
+
     lda #$0A               ;set file sequential position
     jsr FDSBIOS_WRITEFILE  ;save number of games beaten to SM2SAVE
     .word DiskIDString
@@ -419,40 +415,26 @@ TitleKeepCopying:
     jmp LoadFilesDirect
 
 
+SettablesLow:
+    .byte <FileListNumber
+    .byte <WorldNumber
+    .byte <AreaNumber
+    .byte <PlayerStatus
+    .byte <PlayerSize
+SettablesLowEnd:
 
+SettablesHi:
+    .byte >FileListNumber
+    .byte >WorldNumber
+    .byte >AreaNumber
+    .byte >PlayerStatus
+    .byte >PlayerSize
 
-
-WBackupLocation = $761
-
-CopyToBackup:
-    ldx #$69
-    stx WBackupLocation
-    ldx #(SettingsFileEnd-SettingsFileStart)
-@KeepCopying:
-    lda SettingsFileStart-1,x
-    sta WBackupLocation,x
-    dex
-    bne @KeepCopying
-@Exit:
-    rts
-
-CopyFromBackup:
-    ldx WBackupLocation
-    cpx #$69
-    bne @Exit
-    ldx #(SettingsFileEnd-SettingsFileStart)
-@KeepCopying:
-    lda WBackupLocation,x
-    sta SettingsFileStart-1,x
-    dex
-    bne @KeepCopying
-@Exit:
-    rts
+WSelection = $761
 
 .include "sm2menubg.asm"
 .res $6F00 - *, $00
 SettingsFileStart:
-WSelection:
 .byte $00
 WSelections:
 WFile:
