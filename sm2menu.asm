@@ -171,7 +171,7 @@ Title_Main:
     bne @START
     inc WSelection
     lda WSelection
-    cmp #5
+    cmp #(SettablesLowEnd-SettablesLow)
     bne @SELECT2
     lda #0
     sta WSelection
@@ -292,10 +292,10 @@ TStartGame:
     sta PPU_MASK
 
     lda #$00
+    sta $4015
     sta IRQUpdateFlag
     lda #Silence             ;silence music
     sta EventMusicQueue
-    sta $4015
 
     lda Mirror_FDS_CTRL_REG     ;get setting previously used by FDS bios
     and #$f7                    ;and set for vertical mirroring

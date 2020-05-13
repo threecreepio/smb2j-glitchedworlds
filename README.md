@@ -29,9 +29,11 @@ Download & Installation
 
 First, download the latest patch from the [releases](https://github.com/threecreepio/smb2j-glitchedworlds/releases)
 
-Then simply apply that IPS (using for instance Lunar IPS) to the original, unmodified version of the "Super Mario Brothers 2 (Japan).fds" ROM. 
+Then simply apply that IPS (using for instance Lunar IPS) to the original, unmodified version of the "Super Mario Brothers 2 (Japan).fds" ROM without an FDS header.
 
 The MD5 checksum for the ROM you should be using is `7f38210a8a2befb8d347523b4ff6ae7c`.
+
+You will have to use the "patch-fdsheader.ips" file instead of "patch.ips" if the system you will be running the game on requires an FDS header (like the Powerpak.) Unfortunately you will have to test one first and see if it runs, if not, try the other!
 
 Have fun!
 
