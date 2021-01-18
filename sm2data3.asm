@@ -377,7 +377,7 @@ SaveFileHeader:
     .byte $00
 
 UpdateGamesBeaten:
-    lda #$07               ;set file sequential position
+    lda #$08               ;set file sequential position
     jsr FDSBIOS_WRITEFILE  ;save number of games beaten to SM2SAVE
     .word DiskIDString
     .word SaveFileHeader

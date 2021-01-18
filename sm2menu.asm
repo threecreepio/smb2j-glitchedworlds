@@ -154,16 +154,10 @@ Title_Main:
 
 @UP:
     cmp #%00001000
-    bne @B
+    bne @SELECT
     lda #$F
     adc ($3),y
     sta ($3),y
-    jmp Rerender
-
-@B:
-    cmp #%01000000
-    bne @SELECT
-    jsr WriteSettingsFile
     jmp Rerender
 
 @SELECT:
@@ -328,6 +322,10 @@ TStartGame:
     pha
     lda #<(LoadAreaPointer - 1)
     pha
+    lda #>(PatchPlayerNamePal - 1)
+    pha
+    lda #<(PatchPlayerNamePal - 1)
+    pha
     jmp TitleLoadFiles
     : jmp :-
 
@@ -363,43 +361,6 @@ CopyMemoryToSettings:
     dex
     bne @CopySetting
     rts
-
-
-; Save settings file to disk
-SaveFileHeader:
-    .byte $0d, "SM2MENU2"
-    .word SettingsFileStart
-    .byte SettingsFileEnd-SettingsFileStart, $00, $00
-    .word SettingsFileStart
-    .byte $00
-
-WriteSettingsFile:
-    lda #%00010000
-    sta PPU_CTRL
-    lda #%11101110
-    sta PPU_MASK
-    
-    ldy #0
-    ldx #(SettablesLowEnd-SettablesLow)
-@CopySetting:
-    lda SettablesLow,x
-    sta $0
-    lda SettablesHi,x
-    sta $1
-    lda ($0),y
-    sta SettingsFileStart+1,x
-    dex
-    bne @CopySetting
-
-    lda #$0A               ;set file sequential position
-    jsr FDSBIOS_WRITEFILE  ;save number of games beaten to SM2SAVE
-    .word DiskIDString
-    .word SaveFileHeader
-    lda #%00001110
-    sta PPU_MASK
-    lda #%10010000
-    sta PPU_CTRL
-    : jmp :-
 
 
 
@@ -443,6 +404,7 @@ SettablesLow:
     .byte <AreaNumber
     .byte <PlayerStatus
     .byte <PlayerSize
+    .byte <SelectedPlayer
 SettablesLowEnd:
 
 SettablesHi:
@@ -451,6 +413,7 @@ SettablesHi:
     .byte >AreaNumber
     .byte >PlayerStatus
     .byte >PlayerSize
+    .byte >SelectedPlayer
 
 WSelection = $761
 
@@ -469,6 +432,8 @@ WPlayerStatus:
 .byte $00
 WPlayerSize:
 .byte $01
+WCurrentPlayer:
+.byte $00
 SettingsFileEnd:
 .res $7000 - *, $00
 SM2MENU1END:
